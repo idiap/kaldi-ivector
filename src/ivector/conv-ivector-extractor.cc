@@ -20,7 +20,6 @@
 
 #include "ivector/conv-ivector-extractor.h"
 #include "ivector/ivector-extractor.h"
-#include "thread/kaldi-task-sequence.h"
 
 namespace kaldi {
 
@@ -427,7 +426,7 @@ void IvectorConvStats::CommitStatsForM(
     const IvectorExtractorConvUtteranceStats &utt_stats,
     const VectorBase<double> &ivec_mean,
     const SpMatrix<double> &ivec_var) {
-  subspace_stats_lock_.Lock();
+  subspace_stats_lock_.lock();
 
   // We do the occupation stats here also.
   gamma_.AddVec(1.0, utt_stats.gamma);
@@ -446,20 +445,20 @@ void IvectorConvStats::CommitStatsForM(
                                      ivector_dim * (ivector_dim + 1) / 2);
   R_.AddVecVec(1.0, utt_stats.gamma, ivec_scatter_vec);
 
-  subspace_stats_lock_.Unlock();
+  subspace_stats_lock_.unlock();
 }
 
 // TODO: no need to update variance. remove this function later
 void IvectorConvStats::CommitStatsForSigma(
     const IvectorExtractorConv &extractor,
     const IvectorExtractorConvUtteranceStats &utt_stats) {
-  variance_stats_lock_.Lock();
+  variance_stats_lock_.lock();
   // Storing the raw scatter statistics per Gaussian.  In the update phase we'll
   // take into account some other terms relating to the model means and their
   // correlation with the data.
   for (int32 i = 0; i < extractor.NumGauss(); i++)
     S_[i].AddSp(1.0, utt_stats.S[i]);
-  variance_stats_lock_.Unlock();
+  variance_stats_lock_.unlock();
 }
 
 
@@ -468,11 +467,11 @@ void IvectorConvStats::CommitStatsForPrior(const VectorBase<double> &ivec_mean,
                                        const SpMatrix<double> &ivec_var) {
   SpMatrix<double> ivec_scatter(ivec_var);
   ivec_scatter.AddVec2(1.0, ivec_mean);
-  prior_stats_lock_.Lock();
+  prior_stats_lock_.lock();
   num_ivectors_ += 1.0;
   ivector_sum_.AddVec(1.0, ivec_mean);
   ivector_scatter_.AddSp(1.0, ivec_scatter);
-  prior_stats_lock_.Unlock();
+  prior_stats_lock_.unlock();
 }
 
 
