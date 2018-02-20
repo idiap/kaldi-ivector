@@ -1,4 +1,4 @@
-# 7/12/2015
+# UPDATED: 20/02/2018
 This is the README to the Idiap's implementation of the i-vector
 system for Kaldi. It contains information about the package, implementation
 details, installation and compilation.
