@@ -21,6 +21,7 @@
 #define KALDI_IVECTOR_IVECTOR_EXTRACTOR_H_
 
 #include <vector>
+#include <mutex>
 #include "base/kaldi-common.h"
 #include "matrix/matrix-lib.h"
 #include "gmm/model-common.h"
@@ -28,7 +29,6 @@
 #include "gmm/full-gmm.h"
 #include "itf/options-itf.h"
 #include "util/common-utils.h"
-#include "thread/kaldi-mutex.h"
 #include "hmm/posterior.h"
 #include "ivector/ivector-extractor.h"
 
@@ -331,7 +331,7 @@ class IvectorConvStats {
 
   /// This mutex guards gamma_, Y_ and R_ (for multi-threaded
   /// update)
-  Mutex subspace_stats_lock_; 
+  std::mutex subspace_stats_lock_; 
   
   /// Total occupation count for each Gaussian index (zeroth-order stats)
   Vector<double> gamma_;
@@ -348,7 +348,7 @@ class IvectorConvStats {
   Matrix<double> R_;
 
   /// This mutex guards Q_ and G_ (for multi-threaded update)
-  Mutex weight_stats_lock_;
+  std::mutex weight_stats_lock_;
   
   /// Q_ is like R_ (with same dimensions), except used for weight estimation;
   /// the scatter of ivectors is weighted by the coefficient of the quadratic
@@ -360,7 +360,7 @@ class IvectorConvStats {
   Matrix<double> G_;
 
   /// This mutex guards S_ (for multi-threaded update)
-  Mutex variance_stats_lock_;
+  std::mutex variance_stats_lock_;
 
   /// S_{i}, raw second-order stats per Gaussian which we will use to update the
   /// variances Sigma_inv_.
@@ -369,7 +369,7 @@ class IvectorConvStats {
 
   /// This mutex guards num_ivectors_, ivector_sum_ and ivector_scatter_ (for multi-threaded
   /// update)
-  Mutex prior_stats_lock_;
+  std::mutex prior_stats_lock_;
 
   /// Count of the number of iVectors we trained on.   Need for prior re-estimation.
   /// (make it double not int64 to more easily support weighting later.)
